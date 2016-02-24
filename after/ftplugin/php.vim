@@ -1,4 +1,6 @@
-" PHP specific settings.
+"\
+"\ PHP specific settings.
+"\
 set nowrap                      " don't wrap lines
 set tabstop=4                   " a tab is four spaces
 set smarttab
@@ -6,8 +8,14 @@ set softtabstop=4               " when hitting <BS>, pretend like a tab is remov
 set expandtab                   " expand tabs by default (overloadable per file type later)
 set shiftwidth=4                " number of spaces to use for autoindenting
 set shiftround                  " use multiple of shiftwidth when indenting with '<' and '>'
-set tags=tags
-set tags=~/code/Notifier/php.tags
+
+"\
+"\ Open Php Documentation
+"\
+function! BrowseDoc()
+    ! open "http://php.net/<cword>"
+endfunction
+nmap K :call BrowseDoc()<CR>
 
 " Php Refactoring
 " vmap <leader>em :call ExtractMethod()<CR>
@@ -20,10 +28,19 @@ set tags=~/code/Notifier/php.tags
 " Extract Variable PHP
 nmap <leader>ev 0<C-a> = <ESC>pa;
 
-" Php unit
-nmap ,t :!clear && phpunit %<cr>
-nmap ,m yiw:!phpunit --filter ^R''<cr>
-" Laravel framework commons.
+
+
+nmap <leader><leader>o :%s/\['\(.\{-}\)'\]/->\1/gc<CR> 	" Replace associative with object style notation
+
+
+"\
+"\ Php unit
+"\
+"nmap <leader>t :!clear && phpunit %<cr>
+"nmap <leader>m yiw:!phpunit --filter ^R''<cr>
+
+"\
+"\ Laravel framework commons.
 nmap <leader>lr :e app/Http/routes.php<cr>
 nmap <leader>lca :e .env<cr>
 nmap <leader>lc :e composer.json<cr>
