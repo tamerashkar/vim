@@ -1,0 +1,32 @@
+snippet fack
+	for (${2:i}; $2 < ${1:count}; $1++) {
+		${4}
+	}
+snippet dir
+	(function(){
+		/**
+		* @ngdoc directive
+		* @name ${1:moduleName}.directive:${2:directiveName}
+		* @restrict
+		*
+		* @requires $3
+		**/
+		function $2( ${3:service} ) {
+			return {
+				restrict: '${4:EA}',
+				templateUrl: '${5}',
+				link: link
+			};
+
+			function link( scope, element, attrs ) {
+				activate();
+
+				function activate() {
+					${6}
+				}
+			}
+		}
+
+		angular.module('$1')
+			.directive('$2', $2);
+	})();

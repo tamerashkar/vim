@@ -1,21 +1,34 @@
-set nocompatible              						"We want the latest Vim settings/options.
-
+set nocompatible 											"We want the latest Vim settings/options.
 source ~/.vim/plugins.vim
 
 syntax enable
-set backspace=indent,eol,start                                          "Make backspace behave like every other editor.
-let mapleader = ',' 						    	"The default is \, but a comma is much better.
-set number								"Let's activate line numbers.
-set relativenumber
+set backspace=indent,eol,start 								"Make backspace behave like every other editor.
+set background=dark
+"set complete=.,w,b,u 										"Set our desired autocompletion matching.
+let mapleader = ',' 										"The default is \, but a comma is much better.
+set nonumber 													"Let's activate line numbers.
+"set relativenumber
+set noerrorbells visualbell t_vb=               			"No damn bells!
 set autochdir
 set tags=tags;/
+setlocal tabstop=2
+setlocal shiftwidth=2
+au BufNewFile,BufRead crontab.* set nobackup | set nowritebackup " when editting crontab
+
+nnoremap <leader>g :buffers<CR>:buffer<Space>
+nnoremap <leader>gb <C-^>
 
 "-------------Visuals--------------"
-colorscheme atom-dark
-set t_CO=<t_CO>								"Use <t_CO> colors. This is useful for Terminal Vim.
-set guifont=Fira_Code:h15						"Set the default font family and size.
-set guioptions-=e							"We don't want Gui tabs.
-set linespace=10   						        "Macvim-specific line-height.
+"colorscheme atom-dark
+colorscheme solarized
+"colorscheme clarity
+"colorscheme github
+set t_CO=<t_CO>															"Use <t_CO> colors. This is useful for Terminal Vim.
+"set guifont=Fira_Code:h15												"Set the default font family and size.
+"set guifont=Courier_Prime_Code:h15												"Set the default font family and size.
+set guifont=PragmataPro:h15												"Set the default font family and size.
+set guioptions-=e														"We don't want Gui tabs.
+set linespace=15   						        						"Macvim-specific line-height.
 
 set guioptions-=l                                                       "Disable Gui scrollbars.
 set guioptions-=L
@@ -25,28 +38,50 @@ set guioptions-=R
 " Set line number background same as background color.
 highlight LineNr guibg=bg
 " Fake a custom left padding for each window.
-set foldcolumn=1
+set foldcolumn=0
 highlight foldcolumn guibg=bg
 " Get rid of ugly split borders.
 highlight vertsplit guifg=bg guibg=bg
 
+let s:hidden_all = 0
+function! ToggleHiddenAll()
+    if s:hidden_all  == 0
+        let s:hidden_all = 1
+        set noshowmode
+        set noruler
+        set laststatus=0
+        set noshowcmd
+    else
+        let s:hidden_all = 0
+        set showmode
+        set ruler
+        set laststatus=2
+        set showcmd
+    endif
+endfunction
+
+nnoremap <S-h> :call ToggleHiddenAll()<CR>
+
+
 "-------------Search--------------"
-set hlsearch                "Highlight all matched terms.
+set hlsearch                											"Highlight all matched terms.
 set incsearch
 
 
 
 
 "-------------Split Management--------------"
-set splitbelow                 "Make splits default to below...
-set splitright                "And to the right. This feels more natural.
+set splitbelow                 											"Make splits default to below...
+set splitright                											"And to the right. This feels more natural.
 
-"We'll set simpler mappings to switch between splits.
 nmap <C-J> <C-W><C-J>
 nmap <C-K> <C-W><C-K>
 nmap <C-H> <C-W><C-H>
 nmap <C-L> <C-W><C-L>
 
+nnoremap ,v <C-w>v
+nnoremap ,h <C-w>s
+nnoremap ,, <C-w><C-w>
 
 
 "-------------Mappings--------------"
@@ -57,12 +92,31 @@ nmap <Leader>es :e ~/.vim/snippets/
 "Add simple highlight removal.
 nmap <Leader><space> :nohlsearch<cr>
 
+"Ctags
 "Quickly browse to any tag/symbol in the project.
 "Tip: run ctags -R to regenerated the index.
 nmap <Leader>f :tag<space>
+nmap <leader>m <C-]>
+nmap <leader>c <C-]>
 
 "Quickly exit insert mode.
 imap jk <Esc>
+imap jj <Esc>
+
+nmap tt :tabnew<CR>
+
+" Quick save and quick file
+imap <leader>w <esc>:w<CR>
+nmap <leader>w :w<CR>
+nmap <leader>q :q<CR>
+nmap <leader>x :x<CR>
+
+" Quick search and replace
+nmap <leader>sr :%s/
+vmap <leader>sr :s/
+
+" Go to bash mode
+nmap <leader>b :sh<CR>
 
 "-------------Plugins--------------"
 "/
@@ -79,7 +133,6 @@ nmap <D-e> :CtrlPMRUFiles<cr>
 
 "/
 "/ NERDTree
-"/
 let NERDTreeHijackNetrw = 0
 
 "Make NERDTree easier to toggle.
@@ -88,8 +141,9 @@ nmap <D-1> :NERDTreeToggle<cr>
 "/
 "/ Syntastic
 "/
-let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']
-let g:syntastic_php_phpcs_args='--standard=PSR2 -n'
+let g:syntastic_php_checkers= ['php', 'phpcs'] " temporary took out phpmd
+let g:syntastic_php_phpmd_post_args = 'controversial,design,unusedcode,' . $HOME . '/code/markettrader/phpmd.xml'
+let g:syntastic_php_phpcs_args = '--standard=PSR2 -n'
 nmap <leader>st :SyntasticToggleMode<CR>
 
 "/
@@ -104,18 +158,22 @@ nnoremap <leader>pd :call pdv#DocumentWithSnip()<CR>
 "/ Taglist
 "/
 nnoremap <F8> :TlistToggle<CR>
+nnoremap <leader>tt :TlistToggle<CR>
 
 "/
 "/ Tabular
 "/
-if exists(":Tabularize")
- nmap <leader><leader>= :Tabularize /=<CR>
- vmap <leader><leader>= :Tabularize /=<CR>
- nmap <leader><leader>a :Tabularize /=>/<CR>
- vmap <leader><leader>a :Tabularize /=>/<CR>
- nmap <leader><leader>: :Tabularize /:\zs<CR>
- vmap <leader><leader>: :Tabularize /:\zs<CR>
-endif
+nmap <leader>a :Tabularize /=/<CR>
+vmap <leader>a :Tabularize /=/<CR>
+nmap <leader>aa :Tabularize /=>/<CR>
+vmap <leader>aa :Tabularize /=>/<CR>
+nmap <leader>o :Tabularize /:\zs/<CR>
+vmap <leader>o :Tabularize /:\zs/<CR>
+
+"/
+"/ Vim Markdown
+"/
+let g:vim_markdown_folding_disabled = 1
 
 "-------------Laravel-Specific--------------"
 nmap <leader>lr :e app/routes.php<cr>
@@ -142,7 +200,6 @@ autocmd BufWritePre * :%s/\s\+$//e
 " - Press 'zz' to instantly center the line where the cursor is located.
 " - Press 'ctrl-]' to go to method under cursor.
 " - Press 'ctrl-^' takes you previous location.
-" - Press 'cs<letter><replacement>' to replace surrounding text.
 " - Press 'c2t_' to cut up till '_' and go into insert mode.
 " - Press 'f$' to move to next variable in PHP.
 " - Press 'm<letter>' to set bookmark,

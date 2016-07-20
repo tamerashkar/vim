@@ -8,6 +8,7 @@ set softtabstop=4               " when hitting <BS>, pretend like a tab is remov
 set expandtab                   " expand tabs by default (overloadable per file type later)
 set shiftwidth=4                " number of spaces to use for autoindenting
 set shiftround                  " use multiple of shiftwidth when indenting with '<' and '>'
+au BufEnter *.blade.php set ai sw=2 ts=2 sta et
 
 "\
 "\ Open Php Documentation
@@ -96,3 +97,10 @@ function! AddDependency()
 endfunction
 nmap <leader>2 :call AddDependency()<cr>
 
+"/
+"/ php-cs-fixer.vim
+"/
+" If php-cs-fixer is in $PATH, you don't need to define line below
+" let g:php_cs_fixer_path = "~/php-cs-fixer.phar" " define the path to the php-cs-fixer.phar
+let g:php_cs_fixer_level = "psr2"              " which level ?
+nnoremap <silent><leader>pf :call PhpCsFixerFixFile()<CR>
